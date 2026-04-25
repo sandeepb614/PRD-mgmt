@@ -1,0 +1,333 @@
+{
+  "prd": {
+    "metadata": {
+      "title": "Ubuntu for Embedded ARM Platforms",
+      "version": "1.0",
+      "status": "Draft",
+      "date": "2026-04-25",
+      "owner": "Platform Software Team"
+    },
+    "sections": [
+      {
+        "id": "1",
+        "title": "Executive Summary",
+        "content": "This document defines the product requirements for Ubuntu software support targeting embedded ARM platforms. The goal is to deliver a minimal, reliable, and maintainable Ubuntu-based OS image optimized for ARM Cortex-A class processors used in industrial, automotive, and IoT embedded systems. The offering covers base OS configuration, BSP integration, toolchain support, and long-term security maintenance."
+      },
+      {
+        "id": "2",
+        "title": "Problem Statement",
+        "content": "Embedded system developers face fragmented OS options for ARM platforms: lightweight RTOSes lack ecosystem breadth, while full desktop Linux distributions carry unnecessary overhead and poor hardware abstraction. Teams spend significant effort maintaining downstream kernel forks, integrating BSPs, and backporting security fixes. Ubuntu's LTS model and broad toolchain support make it an attractive foundation, but out-of-the-box Ubuntu is not optimized for embedded ARM constraints such as limited RAM, flash storage, and absence of a display or keyboard."
+      },
+      {
+        "id": "3",
+        "title": "Goals",
+        "content": null,
+        "items": [
+          "Deliver a production-grade Ubuntu image for ARM Cortex-A (ARMv7 and AArch64) embedded targets.",
+          "Minimize footprint: base image under 500 MB on-disk, under 128 MB RAM idle consumption.",
+          "Provide upstream-aligned LTS kernel with vendor BSP patches applied and maintained.",
+          "Support unattended, atomic over-the-air (OTA) updates with rollback capability.",
+          "Meet a 5-year security maintenance window aligned with Ubuntu LTS support lifecycle.",
+          "Enable reproducible builds for supply-chain integrity and audit compliance."
+        ]
+      },
+      {
+        "id": "4",
+        "title": "Non-Goals",
+        "content": null,
+        "items": [
+          "Desktop or GUI stack (no X11, Wayland, or display server by default).",
+          "Support for ARM Cortex-M (microcontroller-class) or RISC-V targets.",
+          "Proprietary BSP binary blob ownership or licensing — vendors supply blobs.",
+          "Real-time (PREEMPT_RT) kernel as a default — available as an optional variant only.",
+          "Full Ubuntu package mirror hosting — existing Ubuntu infrastructure is reused."
+        ]
+      },
+      {
+        "id": "5",
+        "title": "Target Users",
+        "content": null,
+        "items": [
+          {
+            "persona": "Embedded Software Engineer",
+            "description": "Writes application and middleware software targeting the embedded device. Needs a familiar Linux environment with standard tooling (gcc, gdb, systemd) and minimal BSP bring-up friction."
+          },
+          {
+            "persona": "Platform / BSP Engineer",
+            "description": "Integrates SoC vendor BSPs, device tree overlays, and kernel patches. Needs a reproducible build system and clear upstream patch management workflow."
+          },
+          {
+            "persona": "DevOps / Release Engineer",
+            "description": "Manages OTA update pipelines, CI/CD image builds, and fleet deployment. Needs atomic update tooling, rollback guarantees, and image signing."
+          },
+          {
+            "persona": "Security Engineer",
+            "description": "Responsible for CVE triage, hardening, and compliance (e.g., IEC 62443, UNECE WP.29). Needs timely security patches, SBOM generation, and Secure Boot support."
+          }
+        ]
+      },
+      {
+        "id": "6",
+        "title": "Supported Hardware Targets",
+        "content": null,
+        "items": [
+          {
+            "tier": "Tier 1 (Fully Supported)",
+            "platforms": [
+              "NXP i.MX8 (AArch64)",
+              "Raspberry Pi 4 / Compute Module 4 (AArch64)",
+              "Texas Instruments AM62x (AArch64)",
+              "Qualcomm QCS6490 / RB5 (AArch64)"
+            ]
+          },
+          {
+            "tier": "Tier 2 (Community Supported)",
+            "platforms": [
+              "Rockchip RK3588 (AArch64)",
+              "Allwinner H6 (AArch64)",
+              "STM32MP1 (ARMv7)"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "7",
+        "title": "Functional Requirements",
+        "content": null,
+        "requirements": [
+          {
+            "id": "FR-01",
+            "priority": "Must Have",
+            "description": "The base image must boot to a functional systemd userspace on all Tier 1 targets within 30 seconds from power-on."
+          },
+          {
+            "id": "FR-02",
+            "priority": "Must Have",
+            "description": "The image must include a minimal package set: libc6, systemd, openssh-server, apt, and platform-specific BSP packages. No desktop packages by default."
+          },
+          {
+            "id": "FR-03",
+            "priority": "Must Have",
+            "description": "OTA updates must be delivered atomically via an A/B partition scheme. A failed update must automatically trigger rollback to the last known-good partition."
+          },
+          {
+            "id": "FR-04",
+            "priority": "Must Have",
+            "description": "Secure Boot must be supported using UEFI or U-Boot verified boot chains. Image signing keys must be configurable per device fleet."
+          },
+          {
+            "id": "FR-05",
+            "priority": "Must Have",
+            "description": "A software bill of materials (SBOM) in SPDX 2.3 format must be generated as a build artifact for every released image."
+          },
+          {
+            "id": "FR-06",
+            "priority": "Must Have",
+            "description": "The build system must produce reproducible images: byte-for-byte identical output given the same inputs and build environment."
+          },
+          {
+            "id": "FR-07",
+            "priority": "Should Have",
+            "description": "A PREEMPT_RT kernel variant must be available as an optional package overlay for latency-sensitive workloads."
+          },
+          {
+            "id": "FR-08",
+            "priority": "Should Have",
+            "description": "The image must support read-only root filesystem operation with an overlay (tmpfs or persistent) for writable state."
+          },
+          {
+            "id": "FR-09",
+            "priority": "Should Have",
+            "description": "Factory reset must be triggerable via a hardware GPIO signal or a signed software command, restoring the device to the factory image partition."
+          },
+          {
+            "id": "FR-10",
+            "priority": "Nice to Have",
+            "description": "A device provisioning service (certificates, fleet registration) must be optionally includable as a composable layer on top of the base image."
+          }
+        ]
+      },
+      {
+        "id": "8",
+        "title": "Non-Functional Requirements",
+        "content": null,
+        "requirements": [
+          {
+            "id": "NFR-01",
+            "category": "Performance",
+            "description": "Idle RAM consumption of the base image must not exceed 128 MB on a device with 512 MB RAM."
+          },
+          {
+            "id": "NFR-02",
+            "category": "Storage",
+            "description": "Compressed base image must fit within 300 MB; uncompressed on-device footprint must remain under 500 MB."
+          },
+          {
+            "id": "NFR-03",
+            "category": "Security",
+            "description": "Critical and High CVEs in base image packages must be patched and released within 14 days of upstream fix availability."
+          },
+          {
+            "id": "NFR-04",
+            "category": "Reliability",
+            "description": "OTA update success rate must be ≥ 99.5% measured across a reference fleet of 1,000 devices over a 90-day period."
+          },
+          {
+            "id": "NFR-05",
+            "category": "Maintainability",
+            "description": "The BSP patch stack against the upstream LTS kernel must be rebased within 30 days of each upstream stable release."
+          },
+          {
+            "id": "NFR-06",
+            "category": "Compliance",
+            "description": "The build and release process must support audit trails sufficient for IEC 62443-4-1 SDL compliance."
+          }
+        ]
+      },
+      {
+        "id": "9",
+        "title": "Technical Architecture",
+        "content": null,
+        "components": [
+          {
+            "component": "Base Image",
+            "description": "Ubuntu 24.04 LTS (Noble Numbat) minimal root filesystem built with ubuntu-core-desktop debootstrap profile stripped to headless essentials. Delivered as a raw disk image with GPT partition layout."
+          },
+          {
+            "component": "Kernel",
+            "description": "Ubuntu linux-image-generic-hwe LTS kernel (6.8.x baseline) with per-platform BSP patch series applied as a quilt stack. Kernel config follows Ubuntu hardening baseline with embedded-specific optimizations (CONFIG_HZ_250, reduced driver footprint)."
+          },
+          {
+            "component": "Bootloader",
+            "description": "U-Boot 2024.04 with distro boot script. UEFI GRUB used on platforms supporting EDK2. A/B boot slot selection logic implemented in U-Boot environment scripts."
+          },
+          {
+            "component": "Update Engine",
+            "description": "Mender.io client (open-source tier) or Eclipse hawkBit-compatible agent for OTA delivery. Update artifacts signed with Ed25519 keys. Rollback triggered via U-Boot boot count mechanism."
+          },
+          {
+            "component": "Build System",
+            "description": "Yocto-compatible layer structure with ubuntu-core base layer plus per-SoC BSP layers. CI pipelines run on GitHub Actions with ARM cross-compilation toolchain (gcc-aarch64-linux-gnu 13.x)."
+          },
+          {
+            "component": "Security Hardening",
+            "description": "AppArmor profiles enabled by default. systemd service sandboxing applied to all bundled services. SSH hardened: key-based auth only, root login disabled. Kernel parameters follow CIS Level 1 benchmark."
+          }
+        ]
+      },
+      {
+        "id": "10",
+        "title": "Milestones",
+        "content": null,
+        "milestones": [
+          {
+            "milestone": "M1 — Alpha",
+            "target_date": "2026-07-01",
+            "deliverables": [
+              "Bootable base image on NXP i.MX8 and Raspberry Pi CM4.",
+              "Build system skeleton with reproducible image output.",
+              "Initial SBOM generation integrated into CI."
+            ]
+          },
+          {
+            "milestone": "M2 — Beta",
+            "target_date": "2026-09-15",
+            "deliverables": [
+              "OTA update pipeline functional with A/B rollback.",
+              "Secure Boot chain validated on Tier 1 targets.",
+              "All Tier 1 platforms booting and passing hardware smoke tests.",
+              "PREEMPT_RT kernel variant available."
+            ]
+          },
+          {
+            "milestone": "M3 — GA",
+            "target_date": "2026-11-30",
+            "deliverables": [
+              "Read-only rootfs and factory reset implemented.",
+              "Security hardening audit complete.",
+              "Documentation: BSP integration guide, OTA operator guide, security hardening guide.",
+              "5-year maintenance commitment signed off."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "11",
+        "title": "Risks and Mitigations",
+        "content": null,
+        "risks": [
+          {
+            "risk": "Vendor BSP quality and upstream alignment vary significantly across SoCs.",
+            "likelihood": "High",
+            "impact": "High",
+            "mitigation": "Maintain a BSP health scorecard; gate Tier 1 status on upstream kernel submission progress. Engage SoC vendors early for long-term patch support commitments."
+          },
+          {
+            "risk": "Ubuntu LTS kernel updates may break platform-specific BSP patches.",
+            "likelihood": "Medium",
+            "impact": "High",
+            "mitigation": "Run automated hardware-in-the-loop (HIL) regression tests in CI triggered on every upstream stable kernel tag."
+          },
+          {
+            "risk": "OTA rollback may fail on devices with corrupted bootloader environment.",
+            "likelihood": "Low",
+            "impact": "Critical",
+            "mitigation": "Ship a dedicated rescue partition. Validate bootloader environment write reliability in HIL tests. Provide field recovery procedure via USB."
+          },
+          {
+            "risk": "Supply chain attack on build toolchain or package mirrors.",
+            "likelihood": "Low",
+            "impact": "Critical",
+            "mitigation": "Pin all build dependencies to verified hashes. Use isolated build environments. Sign all output artifacts. Publish SBOM for independent verification."
+          }
+        ]
+      },
+      {
+        "id": "12",
+        "title": "Success Metrics",
+        "content": null,
+        "metrics": [
+          {
+            "metric": "Boot time to systemd target",
+            "target": "≤ 30 seconds on all Tier 1 platforms"
+          },
+          {
+            "metric": "Base image idle RAM",
+            "target": "≤ 128 MB on 512 MB RAM device"
+          },
+          {
+            "metric": "Compressed image size",
+            "target": "≤ 300 MB"
+          },
+          {
+            "metric": "OTA update success rate",
+            "target": "≥ 99.5% over 90-day reference fleet run"
+          },
+          {
+            "metric": "Critical/High CVE patch SLA",
+            "target": "100% patched within 14 days of upstream fix"
+          },
+          {
+            "metric": "BSP rebase lag behind upstream stable kernel",
+            "target": "≤ 30 days"
+          },
+          {
+            "metric": "Reproducible build pass rate",
+            "target": "100% of CI builds produce bit-identical images"
+          }
+        ]
+      },
+      {
+        "id": "13",
+        "title": "Open Questions",
+        "content": null,
+        "items": [
+          "Should the OTA update engine be Mender (open-source) or a custom hawkBit client? Decision needed by M1.",
+          "What is the target fleet management dashboard — Mender hosted, self-hosted, or a third-party MDM?",
+          "Will FIPS 140-3 validated cryptography be required for any target markets (US federal, defense)?",
+          "Should ARMv7 (32-bit) receive full Tier 1 support or be limited to Tier 2 given declining adoption?"
+        ]
+      }
+    ]
+  }
+}
