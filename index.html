@@ -103,39 +103,12 @@
       color: #58a6ff;
     }
 
-    /* Section wrapper */
-    .section-block {
-      max-width: 960px;
-      margin: 0 auto 2rem;
-    }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-bottom: 0.6rem;
-    }
-
-    .section-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 0.2em 0.6em;
-      border-radius: 4px;
-    }
-
-    .label-bootloader { background: #2d1f00; color: #d29922; border: 1px solid #9e6a03; }
-    .label-kernel     { background: #1a2a1a; color: #3fb950; border: 1px solid #2ea043; }
-    .label-userspace  { background: #1a2040; color: #79c0ff; border: 1px solid #388bfd; }
-
-    .section-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #f0f6fc;
-    }
-
     /* Table */
+    .table-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -146,9 +119,7 @@
       font-size: 0.82rem;
     }
 
-    thead tr {
-      background: #1c2128;
-    }
+    thead tr { background: #1c2128; }
 
     thead th {
       text-align: left;
@@ -161,7 +132,7 @@
       border-bottom: 1px solid #30363d;
     }
 
-    thead th:first-child { width: 180px; }
+    thead th:first-child { width: 190px; }
 
     tbody tr {
       border-bottom: 1px solid #21262d;
@@ -169,9 +140,20 @@
     }
 
     tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: #1c2128; }
-
     tbody tr.hidden { display: none; }
+
+    /* Group header rows */
+    tr.group-header td {
+      background: #1c2128;
+      padding: 0.45rem 1rem;
+      border-top: 2px solid #30363d;
+      border-bottom: 1px solid #30363d;
+    }
+
+    tr.group-header:first-child td { border-top: none; }
+
+    /* Data rows */
+    tr.data-row:hover { background: #1c2128; }
 
     td {
       padding: 0.55rem 1rem;
@@ -199,6 +181,19 @@
     .dot-kernel     { background: #3fb950; }
     .dot-userspace  { background: #79c0ff; }
 
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.2em 0.6em;
+      border-radius: 4px;
+    }
+
+    .label-bootloader { background: #2d1f00; color: #d29922; border: 1px solid #9e6a03; }
+    .label-kernel     { background: #1a2a1a; color: #3fb950; border: 1px solid #2ea043; }
+    .label-userspace  { background: #1a2040; color: #79c0ff; border: 1px solid #388bfd; }
+
     .feature-pill {
       display: inline-block;
       background: #21262d;
@@ -225,7 +220,7 @@
 
     .no-results {
       max-width: 960px;
-      margin: 0 auto;
+      margin: 1.5rem auto 0;
       text-align: center;
       color: #484f58;
       font-size: 0.9rem;
@@ -266,7 +261,7 @@
   </div>
 </div>
 
-<div id="tables"></div>
+<div class="table-wrap" id="tables"></div>
 <div class="no-results" id="no-results">No features match your search.</div>
 
 <footer>Source: ubuntu-arm-embedded-prd.json</footer>
@@ -283,97 +278,77 @@ const PRD = {
     ]
   },
   kernel: {
-    Architecture:         ["AArch64 (ARMv8-A) SMP","ARMv7 (32-bit, Cortex-A) SMP","Device Tree (DTS/DTB, overlays)","PSCI (power state coordination interface)","EFI stub kernel"],
-    "GPU / Display":      ["Freedreno (Qualcomm Adreno open-source DRM/KMS driver)","Panfrost (ARM Mali Midgard/Bifrost open-source driver)","Lima (ARM Mali-400/450 open-source driver)","etnaviv (Vivante GCxxx open-source driver)","V3D / VC4 (Broadcom VideoCore VI/IV, Raspberry Pi)","imx-drm (NXP i.MX display controller)","DRM/KMS subsystem","DMA-BUF (cross-driver buffer sharing)","MIPI DSI host controller"],
-    "Camera / Media":     ["V4L2 (Video4Linux2 capture/output)","Media controller API","MIPI CSI-2 receiver (imx-media, sun6i-csi, j721e-csi2rx)","ISP support via V4L2 subdev (rkisp1, imx8-isi)","CMA (Contiguous Memory Allocator for DMA buffers)"],
-    Audio:                ["ASoC (ALSA System on Chip framework)","ALSA PCM / HDMI audio","I2S / SAI / SPDIF interfaces","Qualcomm LPASS audio subsystem"],
-    Networking:           ["stmmac (Synopsys Ethernet MAC, NXP/ST/TI)","FEC (NXP i.MX Ethernet)","ath10k / ath11k / ath12k (Qualcomm Wi-Fi)","brcmfmac (Broadcom Wi-Fi, RPi)","mt76 (MediaTek Wi-Fi)","hci_uart / btusb (Bluetooth HCI)","SocketCAN (CAN bus, ISO 15765)","WireGuard (in-kernel VPN)"],
-    Storage:              ["eMMC (mmc_core, sdhci)","UFS (Universal Flash Storage)","NVMe (PCIe SSD)","f2fs (Flash-Friendly File System)","ext4","squashfs (read-only compressed rootfs)","overlayfs (writable overlay on read-only rootfs)","dm-verity (read-only block integrity)","dm-crypt (LUKS2 encryption)"],
-    "Power Management":   ["CPUfreq / OPP (operating performance points)","devfreq (dynamic voltage and frequency scaling)","Thermal framework (cooling governors)","Runtime PM (device power gating)","DVFS (dynamic voltage frequency scaling)"],
-    Security:             ["AppArmor LSM","seccomp-bpf","TPM 2.0 (tpm_tis_spi, tpm_ftpm_tee)","OP-TEE / TEE subsystem (Arm TrustZone)","eBPF (kernel instrumentation and security policies)"],
-    "Peripherals / Buses":["SPI (spi-core, spidev)","I2C (i2c-core, i2cdev)","GPIO (libgpiod kernel interface)","UART / SERDES","PWM subsystem","IIO (Industrial I/O — ADC, IMU, sensors)","USB gadget / OTG (configfs gadget framework)","PCIe (dwc3, imx6q-pcie, rcar-pcie)","IOMMU (ARM SMMU v2/v3)","remoteproc / RPMsg (co-processor communication)"],
-    "Real-Time":          ["PREEMPT_RT patch series (optional kernel variant)","hrtimer high-resolution timers","NO_HZ_FULL (tickless CPU isolation)"],
-    "Debug / Tracing":    ["ftrace / function tracer","perf (hardware PMU counters)","kprobes / uprobes","kdump / kexec (crash dump)"]
+    Architecture:          ["AArch64 (ARMv8-A) SMP","ARMv7 (32-bit, Cortex-A) SMP","Device Tree (DTS/DTB, overlays)","PSCI (power state coordination interface)","EFI stub kernel"],
+    "GPU / Display":       ["Freedreno (Qualcomm Adreno open-source DRM/KMS driver)","Panfrost (ARM Mali Midgard/Bifrost open-source driver)","Lima (ARM Mali-400/450 open-source driver)","etnaviv (Vivante GCxxx open-source driver)","V3D / VC4 (Broadcom VideoCore VI/IV, Raspberry Pi)","imx-drm (NXP i.MX display controller)","DRM/KMS subsystem","DMA-BUF (cross-driver buffer sharing)","MIPI DSI host controller"],
+    "Camera / Media":      ["V4L2 (Video4Linux2 capture/output)","Media controller API","MIPI CSI-2 receiver (imx-media, sun6i-csi, j721e-csi2rx)","ISP support via V4L2 subdev (rkisp1, imx8-isi)","CMA (Contiguous Memory Allocator for DMA buffers)"],
+    Audio:                 ["ASoC (ALSA System on Chip framework)","ALSA PCM / HDMI audio","I2S / SAI / SPDIF interfaces","Qualcomm LPASS audio subsystem"],
+    Networking:            ["stmmac (Synopsys Ethernet MAC, NXP/ST/TI)","FEC (NXP i.MX Ethernet)","ath10k / ath11k / ath12k (Qualcomm Wi-Fi)","brcmfmac (Broadcom Wi-Fi, RPi)","mt76 (MediaTek Wi-Fi)","hci_uart / btusb (Bluetooth HCI)","SocketCAN (CAN bus, ISO 15765)","WireGuard (in-kernel VPN)"],
+    Storage:               ["eMMC (mmc_core, sdhci)","UFS (Universal Flash Storage)","NVMe (PCIe SSD)","f2fs (Flash-Friendly File System)","ext4","squashfs (read-only compressed rootfs)","overlayfs (writable overlay on read-only rootfs)","dm-verity (read-only block integrity)","dm-crypt (LUKS2 encryption)"],
+    "Power Management":    ["CPUfreq / OPP (operating performance points)","devfreq (dynamic voltage and frequency scaling)","Thermal framework (cooling governors)","Runtime PM (device power gating)","DVFS (dynamic voltage frequency scaling)"],
+    Security:              ["AppArmor LSM","seccomp-bpf","TPM 2.0 (tpm_tis_spi, tpm_ftpm_tee)","OP-TEE / TEE subsystem (Arm TrustZone)","eBPF (kernel instrumentation and security policies)"],
+    "Peripherals / Buses": ["SPI (spi-core, spidev)","I2C (i2c-core, i2cdev)","GPIO (libgpiod kernel interface)","UART / SERDES","PWM subsystem","IIO (Industrial I/O — ADC, IMU, sensors)","USB gadget / OTG (configfs gadget framework)","PCIe (dwc3, imx6q-pcie, rcar-pcie)","IOMMU (ARM SMMU v2/v3)","remoteproc / RPMsg (co-processor communication)"],
+    "Real-Time":           ["PREEMPT_RT patch series (optional kernel variant)","hrtimer high-resolution timers","NO_HZ_FULL (tickless CPU isolation)"],
+    "Debug / Tracing":     ["ftrace / function tracer","perf (hardware PMU counters)","kprobes / uprobes","kdump / kexec (crash dump)"]
   },
   userspace: {
-    "Camera / Imaging":       ["libcamera (camera stack and IPA framework)","libcamera-apps (cam, qcam, rpicam-apps)","v4l-utils (v4l2-ctl, media-ctl, v4l2-compliance)","GStreamer v4l2src / libcamerasrc plugin"],
-    "GPU / Graphics":         ["Mesa (OpenGL ES 3.x, Vulkan via Freedreno/Panfrost/V3D/etnaviv)","GBM (Generic Buffer Management)","EGL (Embedded OpenGL platform interface)","Vulkan (via Mesa Turnip for Freedreno, PanVK for Panfrost)","DRM utilities (libdrm, modetest)"],
-    Multimedia:               ["GStreamer (multimedia pipeline framework)","PipeWire (unified audio/video session manager)","WirePlumber (PipeWire session policy)","ALSA utils (aplay, arecord, amixer)","FFmpeg (transcoding, optional)"],
-    "System / Init":          ["systemd (init, socket activation, service supervision)","udev (device event management)","D-Bus (inter-process communication)","polkit (privilege escalation control)"],
+    "Camera / Imaging":        ["libcamera (camera stack and IPA framework)","libcamera-apps (cam, qcam, rpicam-apps)","v4l-utils (v4l2-ctl, media-ctl, v4l2-compliance)","GStreamer v4l2src / libcamerasrc plugin"],
+    "GPU / Graphics":          ["Mesa (OpenGL ES 3.x, Vulkan via Freedreno/Panfrost/V3D/etnaviv)","GBM (Generic Buffer Management)","EGL (Embedded OpenGL platform interface)","Vulkan (via Mesa Turnip for Freedreno, PanVK for Panfrost)","DRM utilities (libdrm, modetest)"],
+    Multimedia:                ["GStreamer (multimedia pipeline framework)","PipeWire (unified audio/video session manager)","WirePlumber (PipeWire session policy)","ALSA utils (aplay, arecord, amixer)","FFmpeg (transcoding, optional)"],
+    "System / Init":           ["systemd (init, socket activation, service supervision)","udev (device event management)","D-Bus (inter-process communication)","polkit (privilege escalation control)"],
     "Networking / Connectivity":["NetworkManager / netplan","wpa_supplicant (WPA2/3 Wi-Fi)","BlueZ (Bluetooth stack)","iwd (optional lightweight Wi-Fi daemon)","avahi (mDNS / Zeroconf)","chrony (NTP time sync)","Mosquitto (MQTT broker/client, optional)","can-utils (candump, cansend, cangen)"],
-    "Security / TEE":         ["optee-client / libteec (OP-TEE userspace API)","tpm2-tools (TPM2 provisioning and attestation)","OpenSSL 3.x","AppArmor utils (aa-enforce, aa-status)","fscrypt (filesystem-level encryption tools)"],
-    "OTA / Update":           ["Mender client (A/B OTA update agent)","SWUpdate (alternative OTA, hawkBit compatible)","RAUC (robust A/B update controller)","OSTree (immutable OS update framework, optional)","fwupd (LVFS firmware update daemon)"],
-    "Containers / Runtimes":  ["containerd (container runtime)","Docker Engine (optional)","snapd (snap package confinement, optional)"],
-    "Hardware Utils":         ["i2c-tools (i2cdetect, i2cdump, i2cset)","spidev-test","libgpiod / gpioinfo / gpioset","devmem2 (register access)","lm-sensors (thermal/voltage monitoring)"],
-    "Debug / Profiling":      ["gdb / gdbserver (remote debugging)","strace / ltrace","perf (userspace frontend)","valgrind","lttng-ust (userspace tracing)"],
-    "Build / Toolchain":      ["GCC 13 aarch64-linux-gnu cross toolchain","Clang / LLVM 18","cmake / ninja / make","Python 3.12","Rust (aarch64-unknown-linux-gnu target)"],
-    Observability:            ["journald (structured logging)","Prometheus node exporter (optional)","collectd (optional)","rsyslog (optional syslog sink)"]
+    "Security / TEE":          ["optee-client / libteec (OP-TEE userspace API)","tpm2-tools (TPM2 provisioning and attestation)","OpenSSL 3.x","AppArmor utils (aa-enforce, aa-status)","fscrypt (filesystem-level encryption tools)"],
+    "OTA / Update":            ["Mender client (A/B OTA update agent)","SWUpdate (alternative OTA, hawkBit compatible)","RAUC (robust A/B update controller)","OSTree (immutable OS update framework, optional)","fwupd (LVFS firmware update daemon)"],
+    "Containers / Runtimes":   ["containerd (container runtime)","Docker Engine (optional)","snapd (snap package confinement, optional)"],
+    "Hardware Utils":          ["i2c-tools (i2cdetect, i2cdump, i2cset)","spidev-test","libgpiod / gpioinfo / gpioset","devmem2 (register access)","lm-sensors (thermal/voltage monitoring)"],
+    "Debug / Profiling":       ["gdb / gdbserver (remote debugging)","strace / ltrace","perf (userspace frontend)","valgrind","lttng-ust (userspace tracing)"],
+    "Build / Toolchain":       ["GCC 13 aarch64-linux-gnu cross toolchain","Clang / LLVM 18","cmake / ninja / make","Python 3.12","Rust (aarch64-unknown-linux-gnu target)"],
+    Observability:             ["journald (structured logging)","Prometheus node exporter (optional)","collectd (optional)","rsyslog (optional syslog sink)"]
   }
 };
 
 const SECTION_META = {
-  bootloader: { label: "Bootloader", labelClass: "label-bootloader", dot: "dot-bootloader", title: "Bootloader" },
-  kernel:     { label: "Kernel",     labelClass: "label-kernel",     dot: "dot-kernel",     title: "Kernel Subsystems" },
-  userspace:  { label: "Userspace",  labelClass: "label-userspace",  dot: "dot-userspace",  title: "Userspace Components" }
+  bootloader: { label: "Bootloader", labelClass: "label-bootloader", dot: "dot-bootloader" },
+  kernel:     { label: "Kernel",     labelClass: "label-kernel",     dot: "dot-kernel"     },
+  userspace:  { label: "Userspace",  labelClass: "label-userspace",  dot: "dot-userspace"  }
 };
 
-function escape(s) {
+function esc(s) {
   return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
-function buildTable(sectionKey, categories) {
-  const meta = SECTION_META[sectionKey];
-  const rows = Object.entries(categories).map(([cat, features]) => {
-    const pills = features.map(f =>
-      `<span class="feature-pill" data-text="${escape(f.toLowerCase())}">${escape(f)}</span>`
-    ).join("");
-    return `<tr data-section="${sectionKey}">
-      <td class="cat-cell"><span class="cat-icon ${meta.dot}"></span>${escape(cat)}</td>
-      <td>${pills}</td>
-    </tr>`;
-  }).join("\n");
+function buildUnifiedTable() {
+  let rows = "";
 
-  return `
-<div class="section-block" data-section="${sectionKey}">
-  <div class="section-header">
-    <span class="section-label ${meta.labelClass}">${meta.label}</span>
-    <span class="section-title">${meta.title}</span>
-  </div>
-  <table>
+  for (const [secKey, meta] of Object.entries(SECTION_META)) {
+    // Group header spanning both columns
+    rows += `<tr class="group-header" data-group="${secKey}">
+      <td colspan="2"><span class="section-label ${meta.labelClass}">${meta.label}</span></td>
+    </tr>`;
+
+    // Data rows
+    const categories =
+      secKey === "bootloader"
+        ? { "Boot Firmware": PRD.bootloader._flat }
+        : PRD[secKey];
+
+    for (const [cat, features] of Object.entries(categories)) {
+      const pills = features.map(f =>
+        `<span class="feature-pill" data-text="${esc(f.toLowerCase())}">${esc(f)}</span>`
+      ).join("");
+      rows += `<tr class="data-row" data-section="${secKey}">
+        <td class="cat-cell"><span class="cat-icon ${meta.dot}"></span>${esc(cat)}</td>
+        <td>${pills}</td>
+      </tr>`;
+    }
+  }
+
+  return `<table>
     <thead><tr><th>Category</th><th>Features</th></tr></thead>
     <tbody>${rows}</tbody>
-  </table>
-</div>`;
+  </table>`;
 }
 
-function buildBootloaderTable() {
-  const meta = SECTION_META.bootloader;
-  const pills = PRD.bootloader._flat.map(f =>
-    `<span class="feature-pill" data-text="${escape(f.toLowerCase())}">${escape(f)}</span>`
-  ).join("");
-  return `
-<div class="section-block" data-section="bootloader">
-  <div class="section-header">
-    <span class="section-label ${meta.labelClass}">${meta.label}</span>
-    <span class="section-title">${meta.title}</span>
-  </div>
-  <table>
-    <thead><tr><th>Category</th><th>Features</th></tr></thead>
-    <tbody>
-      <tr data-section="bootloader">
-        <td class="cat-cell"><span class="cat-icon ${meta.dot}"></span>Boot Firmware</td>
-        <td>${pills}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>`;
-}
-
-const container = document.getElementById("tables");
-container.innerHTML =
-  buildBootloaderTable() +
-  buildTable("kernel", PRD.kernel) +
-  buildTable("userspace", PRD.userspace);
+document.getElementById("tables").innerHTML = buildUnifiedTable();
 
 // Filter + search
 let activeFilter = "all";
@@ -393,36 +368,41 @@ function applyFilters() {
   const query = document.getElementById("search").value.toLowerCase().trim();
   let totalVisible = 0;
 
-  document.querySelectorAll(".section-block").forEach(block => {
-    const sec = block.dataset.section;
+  // Process data rows
+  document.querySelectorAll("tr.data-row").forEach(row => {
+    const sec = row.dataset.section;
     const sectionMatch = activeFilter === "all" || activeFilter === sec;
 
     if (!sectionMatch) {
-      block.style.display = "none";
+      row.classList.add("hidden");
       return;
     }
-    block.style.display = "";
 
-    let blockVisible = 0;
-    block.querySelectorAll("tbody tr").forEach(row => {
-      const pills = row.querySelectorAll(".feature-pill");
-      let rowMatch = false;
-      const catText = row.querySelector(".cat-cell").textContent.toLowerCase();
+    const pills = row.querySelectorAll(".feature-pill");
+    const catText = row.querySelector(".cat-cell").textContent.toLowerCase();
+    let rowMatch = false;
 
+    if (!query) {
+      rowMatch = true;
+      pills.forEach(p => p.classList.remove("highlight"));
+    } else {
       pills.forEach(pill => {
         const text = pill.dataset.text;
-        const matches = !query || text.includes(query) || catText.includes(query);
-        pill.classList.toggle("highlight", !!(query && text.includes(query)));
+        const matches = text.includes(query) || catText.includes(query);
+        pill.classList.toggle("highlight", text.includes(query));
         if (matches) rowMatch = true;
       });
+    }
 
-      if (!query) { rowMatch = true; pills.forEach(p => p.classList.remove("highlight")); }
+    row.classList.toggle("hidden", !rowMatch);
+    if (rowMatch) totalVisible++;
+  });
 
-      row.classList.toggle("hidden", !rowMatch);
-      if (rowMatch) blockVisible++;
-    });
-
-    totalVisible += blockVisible;
+  // Hide group-header rows whose section has no visible data rows
+  document.querySelectorAll("tr.group-header").forEach(header => {
+    const sec = header.dataset.group;
+    const hasVisible = document.querySelector(`tr.data-row[data-section="${sec}"]:not(.hidden)`);
+    header.classList.toggle("hidden", !hasVisible);
   });
 
   document.getElementById("no-results").style.display = totalVisible === 0 ? "block" : "none";
