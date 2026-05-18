@@ -1,0 +1,195 @@
+{
+  "prd": {
+    "metadata": {
+      "title": "Ubuntu for Embedded ARM Platforms",
+      "version": "1.1",
+      "status": "Draft",
+      "date": "2026-04-25",
+      "owner": "Platform Software Team"
+    },
+    "features": {
+      "bootloader": [
+        "U-Boot (distro boot, A/B slot selection, verified boot)",
+        "UEFI / EDK2 TianoCore (platforms with EDK2 firmware support)",
+        "GRUB2 EFI (UEFI boot environments)",
+        "UEFI Secure Boot (shim + MOK key enrollment)",
+        "U-Boot verified boot (FIT image signing with RSA/Ed25519)"
+      ],
+      "kernel": {
+        "architecture": [
+          "AArch64 (ARMv8-A) SMP",
+          "ARMv7 (32-bit, Cortex-A) SMP",
+          "Device Tree (DTS/DTB, overlays)",
+          "PSCI (power state coordination interface)",
+          "EFI stub kernel"
+        ],
+        "gpu_display": [
+          "Freedreno (Qualcomm Adreno open-source DRM/KMS driver)",
+          "Panfrost (ARM Mali Midgard/Bifrost open-source driver)",
+          "Lima (ARM Mali-400/450 open-source driver)",
+          "etnaviv (Vivante GCxxx open-source driver)",
+          "V3D / VC4 (Broadcom VideoCore VI/IV, Raspberry Pi)",
+          "imx-drm (NXP i.MX display controller)",
+          "DRM/KMS subsystem",
+          "DMA-BUF (cross-driver buffer sharing)",
+          "MIPI DSI host controller"
+        ],
+        "camera_media": [
+          "V4L2 (Video4Linux2 capture/output)",
+          "Media controller API",
+          "MIPI CSI-2 receiver (imx-media, sun6i-csi, j721e-csi2rx)",
+          "ISP support via V4L2 subdev (rkisp1, imx8-isi)",
+          "CMA (Contiguous Memory Allocator for DMA buffers)"
+        ],
+        "audio": [
+          "ASoC (ALSA System on Chip framework)",
+          "ALSA PCM / HDMI audio",
+          "I2S / SAI / SPDIF interfaces",
+          "Qualcomm LPASS audio subsystem"
+        ],
+        "networking": [
+          "stmmac (Synopsys Ethernet MAC, NXP/ST/TI)",
+          "FEC (NXP i.MX Ethernet)",
+          "ath10k / ath11k / ath12k (Qualcomm Wi-Fi)",
+          "brcmfmac (Broadcom Wi-Fi, RPi)",
+          "mt76 (MediaTek Wi-Fi)",
+          "hci_uart / btusb (Bluetooth HCI)",
+          "SocketCAN (CAN bus, ISO 15765)",
+          "WireGuard (in-kernel VPN)"
+        ],
+        "storage": [
+          "eMMC (mmc_core, sdhci)",
+          "UFS (Universal Flash Storage)",
+          "NVMe (PCIe SSD)",
+          "f2fs (Flash-Friendly File System)",
+          "ext4",
+          "squashfs (read-only compressed rootfs)",
+          "overlayfs (writable overlay on read-only rootfs)",
+          "dm-verity (read-only block integrity)",
+          "dm-crypt (LUKS2 encryption)"
+        ],
+        "power_management": [
+          "CPUfreq / OPP (operating performance points)",
+          "devfreq (dynamic voltage and frequency scaling)",
+          "Thermal framework (cooling governors)",
+          "Runtime PM (device power gating)",
+          "DVFS (dynamic voltage frequency scaling)"
+        ],
+        "security": [
+          "AppArmor LSM",
+          "seccomp-bpf",
+          "TPM 2.0 (tpm_tis_spi, tpm_ftpm_tee)",
+          "OP-TEE / TEE subsystem (Arm TrustZone)",
+          "eBPF (kernel instrumentation and security policies)"
+        ],
+        "peripherals_buses": [
+          "SPI (spi-core, spidev)",
+          "I2C (i2c-core, i2cdev)",
+          "GPIO (libgpiod kernel interface)",
+          "UART / SERDES",
+          "PWM subsystem",
+          "IIO (Industrial I/O — ADC, IMU, sensors)",
+          "USB gadget / OTG (configfs gadget framework)",
+          "PCIe (dwc3, imx6q-pcie, rcar-pcie)",
+          "IOMMU (ARM SMMU v2/v3)",
+          "remoteproc / RPMsg (co-processor communication)"
+        ],
+        "real_time": [
+          "PREEMPT_RT patch series (optional kernel variant)",
+          "hrtimer high-resolution timers",
+          "NO_HZ_FULL (tickless CPU isolation)"
+        ],
+        "debug_tracing": [
+          "ftrace / function tracer",
+          "perf (hardware PMU counters)",
+          "kprobes / uprobes",
+          "kdump / kexec (crash dump)"
+        ]
+      },
+      "userspace": {
+        "camera_imaging": [
+          "libcamera (camera stack and IPA framework)",
+          "libcamera-apps (cam, qcam, rpicam-apps)",
+          "v4l-utils (v4l2-ctl, media-ctl, v4l2-compliance)",
+          "GStreamer v4l2src / libcamerasrc plugin"
+        ],
+        "gpu_graphics": [
+          "Mesa (OpenGL ES 3.x, Vulkan via Freedreno/Panfrost/V3D/etnaviv)",
+          "GBM (Generic Buffer Management)",
+          "EGL (Embedded OpenGL platform interface)",
+          "Vulkan (via Mesa Turnip for Freedreno, PanVK for Panfrost)",
+          "DRM utilities (libdrm, modetest)"
+        ],
+        "multimedia": [
+          "GStreamer (multimedia pipeline framework)",
+          "PipeWire (unified audio/video session manager)",
+          "WirePlumber (PipeWire session policy)",
+          "ALSA utils (aplay, arecord, amixer)",
+          "FFmpeg (transcoding, optional)"
+        ],
+        "system_init_services": [
+          "systemd (init, socket activation, service supervision)",
+          "udev (device event management)",
+          "D-Bus (inter-process communication)",
+          "polkit (privilege escalation control)"
+        ],
+        "networking_connectivity": [
+          "NetworkManager / netplan",
+          "wpa_supplicant (WPA2/3 Wi-Fi)",
+          "BlueZ (Bluetooth stack)",
+          "iwd (optional lightweight Wi-Fi daemon)",
+          "avahi (mDNS / Zeroconf)",
+          "chrony (NTP time sync)",
+          "Mosquitto (MQTT broker/client, optional)",
+          "can-utils (candump, cansend, cangen)"
+        ],
+        "security_tee": [
+          "optee-client / libteec (OP-TEE userspace API)",
+          "tpm2-tools (TPM2 provisioning and attestation)",
+          "OpenSSL 3.x",
+          "AppArmor utils (aa-enforce, aa-status)",
+          "fscrypt (filesystem-level encryption tools)"
+        ],
+        "ota_update": [
+          "Mender client (A/B OTA update agent)",
+          "SWUpdate (alternative OTA, hawkBit compatible)",
+          "RAUC (robust A/B update controller)",
+          "OSTree (immutable OS update framework, optional)",
+          "fwupd (LVFS firmware update daemon)"
+        ],
+        "containers_runtimes": [
+          "containerd (container runtime)",
+          "Docker Engine (optional)",
+          "snapd (snap package confinement, optional)"
+        ],
+        "hardware_utils": [
+          "i2c-tools (i2cdetect, i2cdump, i2cset)",
+          "spidev-test",
+          "libgpiod / gpioinfo / gpioset",
+          "devmem2 (register access)",
+          "lm-sensors (thermal/voltage monitoring)"
+        ],
+        "debug_profiling": [
+          "gdb / gdbserver (remote debugging)",
+          "strace / ltrace",
+          "perf (userspace frontend)",
+          "valgrind",
+          "lttng-ust (userspace tracing)"
+        ],
+        "build_toolchain": [
+          "GCC 13 aarch64-linux-gnu cross toolchain",
+          "Clang / LLVM 18",
+          "cmake / ninja / make",
+          "Python 3.12",
+          "Rust (aarch64-unknown-linux-gnu target)"
+        ],
+        "observability": [
+          "journald (structured logging)",
+          "Prometheus node exporter (optional)",
+          "collectd (optional)",
+          "rsyslog (optional syslog sink)"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ubuntu Embedded ARM — PRD</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: ui-monospace, "SFMono-Regular", "Cascadia Code", "Fira Code", monospace;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    header {
+      max-width: 960px;
+      margin: 0 auto 2.5rem;
+      border-bottom: 1px solid #30363d;
+      padding-bottom: 1.25rem;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #f0f6fc;
+      letter-spacing: -0.01em;
+    }
+
+    .meta {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 0.6rem;
+      font-size: 0.78rem;
+      color: #8b949e;
+    }
+
+    .meta span strong { color: #e6edf3; }
+
+    .badge {
+      display: inline-block;
+      background: #1f3a1f;
+      color: #56d364;
+      border: 1px solid #2ea043;
+      border-radius: 2em;
+      padding: 0.15em 0.7em;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    /* Filter bar */
+    .controls {
+      max-width: 960px;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .search {
+      flex: 1;
+      min-width: 200px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #e6edf3;
+      font-family: inherit;
+      font-size: 0.85rem;
+      padding: 0.45rem 0.75rem;
+      outline: none;
+    }
+
+    .search:focus { border-color: #58a6ff; }
+    .search::placeholder { color: #484f58; }
+
+    .filter-btns {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #8b949e;
+      font-family: inherit;
+      font-size: 0.78rem;
+      padding: 0.35rem 0.75rem;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .filter-btn:hover { border-color: #58a6ff; color: #58a6ff; }
+
+    .filter-btn.active {
+      background: #1f3055;
+      border-color: #58a6ff;
+      color: #58a6ff;
+    }
+
+    /* Table */
+    .table-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 0.82rem;
+    }
+
+    thead tr { background: #1c2128; }
+
+    thead th {
+      text-align: left;
+      padding: 0.55rem 1rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8b949e;
+      border-bottom: 1px solid #30363d;
+    }
+
+    thead th:first-child { width: 190px; }
+
+    tbody tr {
+      border-bottom: 1px solid #21262d;
+      transition: background 0.1s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr.hidden { display: none; }
+
+    /* Group header rows */
+    tr.group-header td {
+      background: #1c2128;
+      padding: 0.45rem 1rem;
+      border-top: 2px solid #30363d;
+      border-bottom: 1px solid #30363d;
+    }
+
+    tr.group-header:first-child td { border-top: none; }
+
+    /* Data rows */
+    tr.data-row:hover { background: #1c2128; }
+
+    td {
+      padding: 0.55rem 1rem;
+      vertical-align: top;
+    }
+
+    .cat-cell {
+      color: #e6edf3;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .cat-icon {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+    }
+
+    .dot-bootloader { background: #d29922; }
+    .dot-kernel     { background: #3fb950; }
+    .dot-userspace  { background: #79c0ff; }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.2em 0.6em;
+      border-radius: 4px;
+    }
+
+    .label-bootloader { background: #2d1f00; color: #d29922; border: 1px solid #9e6a03; }
+    .label-kernel     { background: #1a2a1a; color: #3fb950; border: 1px solid #2ea043; }
+    .label-userspace  { background: #1a2040; color: #79c0ff; border: 1px solid #388bfd; }
+
+    .feature-pill {
+      display: inline-block;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      padding: 0.15em 0.5em;
+      margin: 0.15em 0.25em 0.15em 0;
+      color: #e6edf3;
+      font-size: 0.78rem;
+      transition: border-color 0.1s, color 0.1s;
+    }
+
+    .feature-pill:hover {
+      border-color: #58a6ff;
+      color: #58a6ff;
+      cursor: default;
+    }
+
+    .feature-pill.highlight {
+      border-color: #d29922;
+      color: #d29922;
+      background: #2d1f00;
+    }
+
+    .no-results {
+      max-width: 960px;
+      margin: 1.5rem auto 0;
+      text-align: center;
+      color: #484f58;
+      font-size: 0.9rem;
+      padding: 3rem 0;
+      display: none;
+    }
+
+    footer {
+      max-width: 960px;
+      margin: 3rem auto 0;
+      text-align: right;
+      font-size: 0.72rem;
+      color: #484f58;
+      border-top: 1px solid #21262d;
+      padding-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Ubuntu for Embedded ARM Platforms <span class="badge">PRD</span></h1>
+  <div class="meta">
+    <span><strong>Version</strong> 1.1</span>
+    <span><strong>Status</strong> Draft</span>
+    <span><strong>Date</strong> 2026-04-25</span>
+    <span><strong>Owner</strong> Platform Software Team</span>
+  </div>
+</header>
+
+<div class="controls">
+  <input class="search" type="search" placeholder="Filter features…" id="search" />
+  <div class="filter-btns">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="bootloader">Bootloader</button>
+    <button class="filter-btn" data-filter="kernel">Kernel</button>
+    <button class="filter-btn" data-filter="userspace">Userspace</button>
+  </div>
+</div>
+
+<div class="table-wrap" id="tables"></div>
+<div class="no-results" id="no-results">No features match your search.</div>
+
+<footer>Source: ubuntu-arm-embedded-prd.json</footer>
+
+<script>
+const PRD = {
+  bootloader: {
+    _flat: [
+      "U-Boot (distro boot, A/B slot selection, verified boot)",
+      "UEFI / EDK2 TianoCore (platforms with EDK2 firmware support)",
+      "GRUB2 EFI (UEFI boot environments)",
+      "UEFI Secure Boot (shim + MOK key enrollment)",
+      "U-Boot verified boot (FIT image signing with RSA/Ed25519)"
+    ]
+  },
+  kernel: {
+    Architecture:          ["AArch64 (ARMv8-A) SMP","ARMv7 (32-bit, Cortex-A) SMP","Device Tree (DTS/DTB, overlays)","PSCI (power state coordination interface)","EFI stub kernel"],
+    "GPU / Display":       ["Freedreno (Qualcomm Adreno open-source DRM/KMS driver)","Panfrost (ARM Mali Midgard/Bifrost open-source driver)","Lima (ARM Mali-400/450 open-source driver)","etnaviv (Vivante GCxxx open-source driver)","V3D / VC4 (Broadcom VideoCore VI/IV, Raspberry Pi)","imx-drm (NXP i.MX display controller)","DRM/KMS subsystem","DMA-BUF (cross-driver buffer sharing)","MIPI DSI host controller"],
+    "Camera / Media":      ["V4L2 (Video4Linux2 capture/output)","Media controller API","MIPI CSI-2 receiver (imx-media, sun6i-csi, j721e-csi2rx)","ISP support via V4L2 subdev (rkisp1, imx8-isi)","CMA (Contiguous Memory Allocator for DMA buffers)"],
+    Audio:                 ["ASoC (ALSA System on Chip framework)","ALSA PCM / HDMI audio","I2S / SAI / SPDIF interfaces","Qualcomm LPASS audio subsystem"],
+    Networking:            ["stmmac (Synopsys Ethernet MAC, NXP/ST/TI)","FEC (NXP i.MX Ethernet)","ath10k / ath11k / ath12k (Qualcomm Wi-Fi)","brcmfmac (Broadcom Wi-Fi, RPi)","mt76 (MediaTek Wi-Fi)","hci_uart / btusb (Bluetooth HCI)","SocketCAN (CAN bus, ISO 15765)","WireGuard (in-kernel VPN)"],
+    Storage:               ["eMMC (mmc_core, sdhci)","UFS (Universal Flash Storage)","NVMe (PCIe SSD)","f2fs (Flash-Friendly File System)","ext4","squashfs (read-only compressed rootfs)","overlayfs (writable overlay on read-only rootfs)","dm-verity (read-only block integrity)","dm-crypt (LUKS2 encryption)"],
+    "Power Management":    ["CPUfreq / OPP (operating performance points)","devfreq (dynamic voltage and frequency scaling)","Thermal framework (cooling governors)","Runtime PM (device power gating)","DVFS (dynamic voltage frequency scaling)"],
+    Security:              ["AppArmor LSM","seccomp-bpf","TPM 2.0 (tpm_tis_spi, tpm_ftpm_tee)","OP-TEE / TEE subsystem (Arm TrustZone)","eBPF (kernel instrumentation and security policies)"],
+    "Peripherals / Buses": ["SPI (spi-core, spidev)","I2C (i2c-core, i2cdev)","GPIO (libgpiod kernel interface)","UART / SERDES","PWM subsystem","IIO (Industrial I/O — ADC, IMU, sensors)","USB gadget / OTG (configfs gadget framework)","PCIe (dwc3, imx6q-pcie, rcar-pcie)","IOMMU (ARM SMMU v2/v3)","remoteproc / RPMsg (co-processor communication)"],
+    "Real-Time":           ["PREEMPT_RT patch series (optional kernel variant)","hrtimer high-resolution timers","NO_HZ_FULL (tickless CPU isolation)"],
+    "Debug / Tracing":     ["ftrace / function tracer","perf (hardware PMU counters)","kprobes / uprobes","kdump / kexec (crash dump)"]
+  },
+  userspace: {
+    "Camera / Imaging":        ["libcamera (camera stack and IPA framework)","libcamera-apps (cam, qcam, rpicam-apps)","v4l-utils (v4l2-ctl, media-ctl, v4l2-compliance)","GStreamer v4l2src / libcamerasrc plugin"],
+    "GPU / Graphics":          ["Mesa (OpenGL ES 3.x, Vulkan via Freedreno/Panfrost/V3D/etnaviv)","GBM (Generic Buffer Management)","EGL (Embedded OpenGL platform interface)","Vulkan (via Mesa Turnip for Freedreno, PanVK for Panfrost)","DRM utilities (libdrm, modetest)"],
+    Multimedia:                ["GStreamer (multimedia pipeline framework)","PipeWire (unified audio/video session manager)","WirePlumber (PipeWire session policy)","ALSA utils (aplay, arecord, amixer)","FFmpeg (transcoding, optional)"],
+    "System / Init":           ["systemd (init, socket activation, service supervision)","udev (device event management)","D-Bus (inter-process communication)","polkit (privilege escalation control)"],
+    "Networking / Connectivity":["NetworkManager / netplan","wpa_supplicant (WPA2/3 Wi-Fi)","BlueZ (Bluetooth stack)","iwd (optional lightweight Wi-Fi daemon)","avahi (mDNS / Zeroconf)","chrony (NTP time sync)","Mosquitto (MQTT broker/client, optional)","can-utils (candump, cansend, cangen)"],
+    "Security / TEE":          ["optee-client / libteec (OP-TEE userspace API)","tpm2-tools (TPM2 provisioning and attestation)","OpenSSL 3.x","AppArmor utils (aa-enforce, aa-status)","fscrypt (filesystem-level encryption tools)"],
+    "OTA / Update":            ["Mender client (A/B OTA update agent)","SWUpdate (alternative OTA, hawkBit compatible)","RAUC (robust A/B update controller)","OSTree (immutable OS update framework, optional)","fwupd (LVFS firmware update daemon)"],
+    "Containers / Runtimes":   ["containerd (container runtime)","Docker Engine (optional)","snapd (snap package confinement, optional)"],
+    "Hardware Utils":          ["i2c-tools (i2cdetect, i2cdump, i2cset)","spidev-test","libgpiod / gpioinfo / gpioset","devmem2 (register access)","lm-sensors (thermal/voltage monitoring)"],
+    "Debug / Profiling":       ["gdb / gdbserver (remote debugging)","strace / ltrace","perf (userspace frontend)","valgrind","lttng-ust (userspace tracing)"],
+    "Build / Toolchain":       ["GCC 13 aarch64-linux-gnu cross toolchain","Clang / LLVM 18","cmake / ninja / make","Python 3.12","Rust (aarch64-unknown-linux-gnu target)"],
+    Observability:             ["journald (structured logging)","Prometheus node exporter (optional)","collectd (optional)","rsyslog (optional syslog sink)"]
+  }
+};
+
+const SECTION_META = {
+  bootloader: { label: "Bootloader", labelClass: "label-bootloader", dot: "dot-bootloader" },
+  kernel:     { label: "Kernel",     labelClass: "label-kernel",     dot: "dot-kernel"     },
+  userspace:  { label: "Userspace",  labelClass: "label-userspace",  dot: "dot-userspace"  }
+};
+
+function esc(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function buildUnifiedTable() {
+  let rows = "";
+
+  for (const [secKey, meta] of Object.entries(SECTION_META)) {
+    // Group header spanning both columns
+    rows += `<tr class="group-header" data-group="${secKey}">
+      <td colspan="2"><span class="section-label ${meta.labelClass}">${meta.label}</span></td>
+    </tr>`;
+
+    // Data rows
+    const categories =
+      secKey === "bootloader"
+        ? { "Boot Firmware": PRD.bootloader._flat }
+        : PRD[secKey];
+
+    for (const [cat, features] of Object.entries(categories)) {
+      const pills = features.map(f =>
+        `<span class="feature-pill" data-text="${esc(f.toLowerCase())}">${esc(f)}</span>`
+      ).join("");
+      rows += `<tr class="data-row" data-section="${secKey}">
+        <td class="cat-cell"><span class="cat-icon ${meta.dot}"></span>${esc(cat)}</td>
+        <td>${pills}</td>
+      </tr>`;
+    }
+  }
+
+  return `<table>
+    <thead><tr><th>Category</th><th>Features</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+document.getElementById("tables").innerHTML = buildUnifiedTable();
+
+// Filter + search
+let activeFilter = "all";
+
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeFilter = btn.dataset.filter;
+    applyFilters();
+  });
+});
+
+document.getElementById("search").addEventListener("input", applyFilters);
+
+function applyFilters() {
+  const query = document.getElementById("search").value.toLowerCase().trim();
+  let totalVisible = 0;
+
+  // Process data rows
+  document.querySelectorAll("tr.data-row").forEach(row => {
+    const sec = row.dataset.section;
+    const sectionMatch = activeFilter === "all" || activeFilter === sec;
+
+    if (!sectionMatch) {
+      row.classList.add("hidden");
+      return;
+    }
+
+    const pills = row.querySelectorAll(".feature-pill");
+    const catText = row.querySelector(".cat-cell").textContent.toLowerCase();
+    let rowMatch = false;
+
+    if (!query) {
+      rowMatch = true;
+      pills.forEach(p => p.classList.remove("highlight"));
+    } else {
+      pills.forEach(pill => {
+        const text = pill.dataset.text;
+        const matches = text.includes(query) || catText.includes(query);
+        pill.classList.toggle("highlight", text.includes(query));
+        if (matches) rowMatch = true;
+      });
+    }
+
+    row.classList.toggle("hidden", !rowMatch);
+    if (rowMatch) totalVisible++;
+  });
+
+  // Hide group-header rows whose section has no visible data rows
+  document.querySelectorAll("tr.group-header").forEach(header => {
+    const sec = header.dataset.group;
+    const hasVisible = document.querySelector(`tr.data-row[data-section="${sec}"]:not(.hidden)`);
+    header.classList.toggle("hidden", !hasVisible);
+  });
+
+  document.getElementById("no-results").style.display = totalVisible === 0 ? "block" : "none";
+}
+</script>
+</body>
+</html>
